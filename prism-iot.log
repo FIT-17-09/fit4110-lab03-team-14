@@ -1,0 +1,23 @@
+
+> fit4110_lab03_postman_mock_testing@0.3.0 mock:iot
+> prism mock contracts/iot-ingestion.openapi.yaml -p 4010 --host 0.0.0.0
+
+/mnt/e/EDUCATION/YEAR-3/Semester 3/Connectivity_Services-Platforms/learning/Lab3/fit4110-17-09-fit4110_lab03-FIT4110_lab03_postman_mock_testing/node_modules/@stoplight/prism-http/dist/mocker/generator/JSONSchema.js:4
+const faker_1 = require("@faker-js/faker");
+                ^
+
+Error [ERR_REQUIRE_ESM]: require() of ES Module /mnt/e/EDUCATION/YEAR-3/Semester 3/Connectivity_Services-Platforms/learning/Lab3/fit4110-17-09-fit4110_lab03-FIT4110_lab03_postman_mock_testing/node_modules/@faker-js/faker/dist/index.js from /mnt/e/EDUCATION/YEAR-3/Semester 3/Connectivity_Services-Platforms/learning/Lab3/fit4110-17-09-fit4110_lab03-FIT4110_lab03_postman_mock_testing/node_modules/@stoplight/prism-http/dist/mocker/generator/JSONSchema.js not supported.
+Instead change the require of index.js in /mnt/e/EDUCATION/YEAR-3/Semester 3/Connectivity_Services-Platforms/learning/Lab3/fit4110-17-09-fit4110_lab03-FIT4110_lab03_postman_mock_testing/node_modules/@stoplight/prism-http/dist/mocker/generator/JSONSchema.js to a dynamic import() which is available in all CommonJS modules.
+    at Object.<anonymous> (/mnt/e/EDUCATION/YEAR-3/Semester 3/Connectivity_Services-Platforms/learning/Lab3/fit4110-17-09-fit4110_lab03-FIT4110_lab03_postman_mock_testing/node_modules/@stoplight/prism-http/dist/mocker/generator/JSONSchema.js:4:17)
+    at Object.<anonymous> (/mnt/e/EDUCATION/YEAR-3/Semester 3/Connectivity_Services-Platforms/learning/Lab3/fit4110-17-09-fit4110_lab03-FIT4110_lab03_postman_mock_testing/node_modules/@stoplight/prism-http/dist/mocker/index.js:20:22)
+    at Object.<anonymous> (/mnt/e/EDUCATION/YEAR-3/Semester 3/Connectivity_Services-Platforms/learning/Lab3/fit4110-17-09-fit4110_lab03-FIT4110_lab03_postman_mock_testing/node_modules/@stoplight/prism-http/dist/forwarder/index.js:15:18)
+    at Object.<anonymous> (/mnt/e/EDUCATION/YEAR-3/Semester 3/Connectivity_Services-Platforms/learning/Lab3/fit4110-17-09-fit4110_lab03-FIT4110_lab03_postman_mock_testing/node_modules/@stoplight/prism-http/dist/index.js:7:21)
+    at Object.<anonymous> (/mnt/e/EDUCATION/YEAR-3/Semester 3/Connectivity_Services-Platforms/learning/Lab3/fit4110-17-09-fit4110_lab03-FIT4110_lab03_postman_mock_testing/node_modules/@stoplight/prism-http-server/dist/server.js:4:22)
+    at Object.<anonymous> (/mnt/e/EDUCATION/YEAR-3/Semester 3/Connectivity_Services-Platforms/learning/Lab3/fit4110-17-09-fit4110_lab03-FIT4110_lab03_postman_mock_testing/node_modules/@stoplight/prism-http-server/dist/index.js:4:16)
+    at Object.<anonymous> (/mnt/e/EDUCATION/YEAR-3/Semester 3/Connectivity_Services-Platforms/learning/Lab3/fit4110-17-09-fit4110_lab03-FIT4110_lab03_postman_mock_testing/node_modules/@stoplight/prism-cli/dist/util/createServer.js:5:29)
+    at Object.<anonymous> (/mnt/e/EDUCATION/YEAR-3/Semester 3/Connectivity_Services-Platforms/learning/Lab3/fit4110-17-09-fit4110_lab03-FIT4110_lab03_postman_mock_testing/node_modules/@stoplight/prism-cli/dist/commands/mock.js:3:24)
+    at Object.<anonymous> (/mnt/e/EDUCATION/YEAR-3/Semester 3/Connectivity_Services-Platforms/learning/Lab3/fit4110-17-09-fit4110_lab03-FIT4110_lab03_postman_mock_testing/node_modules/@stoplight/prism-cli/dist/index.js:5:16) {
+  code: 'ERR_REQUIRE_ESM'
+}
+
+Node.js v18.19.1

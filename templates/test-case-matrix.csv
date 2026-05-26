@@ -1,6 +1,8 @@
 ID,Folder,Endpoint,Method,Scenario,Input file/body,Expected status,Expected response check,Type,Pass/Fail,Evidence
-TC01,Functional,/health,GET,Service is alive,-,200,status=ok,functional,,
-TC02,Functional,/readings,POST,Create reading happy path,mock-data/sensor-reading-valid.json,201,"has reading_id, accepted=true",functional,,
-TC03,Negative,/readings,POST,Missing device_id,mock-data/sensor-reading-invalid-missing-device.json,400,Problem Details,negative,,
-TC04,Auth,/readings,POST,Missing token,mock-data/sensor-reading-valid.json,401,Problem Details,auth,,
-TC05,Boundary,/readings,POST,High temperature boundary,mock-data/sensor-reading-boundary.json,201/400,documented behavior,boundary,,
+TC01,Functional,/health,GET,Service is alive,-,200,status=ok,functional,Pass,reports/newman-report-mock.xml
+TC02,Functional,/readings,POST,Create reading happy path,mock-data/sensor-reading-valid.json,201,"has reading_id, accepted=true",functional,Pass,reports/newman-report-mock.xml
+TC03,Functional,/readings/latest,GET,List latest readings,-,200,"items array present",functional,Pass,reports/newman-report-mock.xml
+TC04,Auth,/readings,POST,Missing token,mock-data/sensor-reading-valid.json,401,Problem Details,auth,Pass,reports/newman-report-mock.xml
+TC05,Negative,/readings,POST,Missing required field,mock-data/sensor-reading-invalid-missing-device.json,400,Problem Details,negative,Pass,reports/newman-report-mock.xml
+TC06,Boundary,/readings,POST,High temperature boundary,mock-data/sensor-reading-boundary.json,201,"accepted at max boundary",boundary,Pass,reports/newman-report-mock.xml
+TC07,Smoke,/detect,POST,Consumer smoke to AI Vision mock,-,200,"has detection_id, label, confidence",smoke,Pass,reports/newman-report-mock.xml

@@ -7,6 +7,7 @@
     "mock:iot": "prism mock contracts/iot-ingestion.openapi.yaml -p 4010 --host 0.0.0.0",
     "mock:vision": "prism mock contracts/ai-vision.openapi.yaml -p 4011 --host 0.0.0.0",
     "mock:all": "sh -c 'npm run mock:iot & npm run mock:vision & wait'",
+    "mock:simple": "node mock-server.js",
     "lint:contracts": "spectral lint contracts/*.yaml --fail-severity error",
     "test:mock": "newman run postman/collections/FIT4110_lab03_iot_ingestion.postman_collection.json -e postman/environments/FIT4110_lab03_mock.postman_environment.json --reporters cli,junit --reporter-junit-export reports/newman-report-mock.xml",
     "test:local": "newman run postman/collections/FIT4110_lab03_iot_ingestion.postman_collection.json -e postman/environments/FIT4110_lab03_local.postman_environment.json --reporters cli,junit --reporter-junit-export reports/newman-report-local.xml",
@@ -16,6 +17,8 @@
   "devDependencies": {
     "@stoplight/prism-cli": "^5.14.2",
     "@stoplight/spectral-cli": "^6.15.0",
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
     "newman": "^6.2.1",
     "newman-reporter-htmlextra": "^1.23.1",
     "wait-on": "^7.2.0"
