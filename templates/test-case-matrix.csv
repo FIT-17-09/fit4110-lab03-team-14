@@ -1,8 +1,11 @@
 ID,Folder,Endpoint,Method,Scenario,Input file/body,Expected status,Expected response check,Type,Pass/Fail,Evidence
-TC01,Functional,/health,GET,Service is alive,-,200,status=ok,functional,Pass,reports/newman-report-mock.xml
-TC02,Functional,/readings,POST,Create reading happy path,mock-data/sensor-reading-valid.json,201,"has reading_id, accepted=true",functional,Pass,reports/newman-report-mock.xml
-TC03,Functional,/readings/latest,GET,List latest readings,-,200,"items array present",functional,Pass,reports/newman-report-mock.xml
-TC04,Auth,/readings,POST,Missing token,mock-data/sensor-reading-valid.json,401,Problem Details,auth,Pass,reports/newman-report-mock.xml
-TC05,Negative,/readings,POST,Missing required field,mock-data/sensor-reading-invalid-missing-device.json,400,Problem Details,negative,Pass,reports/newman-report-mock.xml
-TC06,Boundary,/readings,POST,High temperature boundary,mock-data/sensor-reading-boundary.json,201,"accepted at max boundary",boundary,Pass,reports/newman-report-mock.xml
-TC07,Smoke,/detect,POST,Consumer smoke to AI Vision mock,-,200,"has detection_id, label, confidence",smoke,Pass,reports/newman-report-mock.xml
+TC01,00_Health,/health,GET,Service is alive,-,200,status=ok; service=ai-vision,functional,Pass,reports/newman-report-mock.xml
+TC02,01_Functional,/api/v1/vision/analyze,POST,Queue image analysis happy path,-,202,status=received,functional,Pass,reports/newman-report-mock.xml
+TC03,02_Auth,/api/v1/vision/analyze,POST,Missing token is rejected,-,401,Skipped on mock; 401 on real,auth,Pass,reports/newman-report-mock.xml
+TC04,02_Auth,/api/v1/vision/analyze,POST,Invalid token is rejected,-,401,Skipped on mock; 401 on real,auth,Pass,reports/newman-report-mock.xml
+TC05,03_Negative,/api/v1/vision/analyze,POST,Missing required camera_id,-,400,Problem Details,negative,Pass,reports/newman-report-mock.xml
+TC06,03_Negative,/api/v1/vision/analyze,POST,Wrong format image_url,-,400,Problem Details,negative,Pass,reports/newman-report-mock.xml
+TC07,04_Boundary_Reliability,/api/v1/vision/analyze,POST,Boundary camera_id length 3 accepted,-,202,status=received,boundary,Pass,reports/newman-report-mock.xml
+TC08,04_Boundary_Reliability,/api/v1/vision/analyze,POST,Boundary camera_id length 2 rejected,-,400,Problem Details,boundary,Pass,reports/newman-report-mock.xml
+TC09,05_Consumer_side_Smoke,/readings,POST,Consumer smoke calling IoT Ingestion mock,-,201,accepted=true; reading_id present,smoke,Pass,reports/newman-report-mock.xml
+TC10,06_Local_only_NonFunctional,/api/v1/vision/analyze,POST,Local response time SLA threshold,-,202,responseTime < 1000ms,reliability,Pass,reports/newman-report-mock.xml

@@ -3,35 +3,35 @@
 ## Thông tin chung
 
 - Lab: FIT4110 Lab 03
-- Ngày: 2026-05-23
-- Provider team: IoT Ingestion team
-- Consumer team: Camera/AI Vision test client
-- Provider service: iot-ingestion
-- Consumer service: camera-core / ai-vision
+- Ngày: 2026-05-26
+- Provider team: AI Vision team (Team 14)
+- Consumer team: Camera / Core Business / Analytics
+- Provider service: ai-vision
+- Consumer service: camera / core-business / iot-ingestion (mock dependency)
 
 ## Contract
 
-- Contract file: contracts/iot-ingestion.openapi.yaml
-- Mock base URL: http://localhost:4010
+- Contract file: contracts/ai-vision.openapi.yaml
+- Mock base URL: http://localhost:4011
 - Auth method: Bearer token header `Authorization: Bearer {{authToken}}`
-- Endpoint được test: POST /readings, GET /readings/latest, POST /detect (AI Vision smoke)
+- Endpoint được test: GET /health, POST /api/v1/vision/analyze, POST /readings (Consumer smoke to IoT Ingestion mock)
 
 ## Smoke test
 
 ### Request
 
 ```http
-POST /readings
-Authorization: Bearer lab-token
+POST /api/v1/vision/analyze
+Authorization: Bearer {{authToken}}
 Content-Type: application/json
 ```
 
 ```json
 {
-  "device_id": "device-123",
-  "metric": "temperature",
-  "value": 22.5,
-  "timestamp": "2026-05-23T10:00:00Z"
+  "camera_id": "cam-gate-01-entry",
+  "image_url": "https://ultralytics.com/images/bus.jpg",
+  "timestamp": "2026-05-22T10:30:00Z",
+  "correlationId": "corr-unique-string-12345"
 }
 ```
 
@@ -39,11 +39,8 @@ Content-Type: application/json
 
 ```json
 {
-  "reading_id": "<uuid>",
-  "accepted": true,
-  "device_id": "device-123",
-  "metric": "temperature",
-  "value": 22.5
+  "status": "received",
+  "message": "Ảnh đã được đưa vào hàng đợi xử lý ngầm."
 }
 ```
 
@@ -58,9 +55,10 @@ Content-Type: application/json
 
 | Nội dung | Trước | Sau | Người đồng ý |
 |---|---|---|---|
-| | | | |
+| Cấu trúc Error | Inline JSON error schemas | Chuẩn hóa schema `ProblemDetails` | Team 14 |
+| Auth | Bổ sung Security Scheme JWT | Bổ sung BearerAuth header bắt buộc | Team 14 |
 
 ## Xác nhận
 
-- Provider representative: Team IoT
-- Consumer representative: Team Camera/AI Vision
+- Provider representative: AI Vision (Team 14)
+- Consumer representative: Camera / IoT Ingestion (Team 14)

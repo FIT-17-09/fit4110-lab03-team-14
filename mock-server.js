@@ -166,6 +166,14 @@ iotServer.listen(4010, '0.0.0.0', () => {
   console.log('IoT Ingestion mock server running on port 4010');
 });
 
+visionServer.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.log('Port 4011 is already in use (likely by Prism). Skipping AI Vision mock.');
+  } else {
+    console.error('Vision mock server error:', err);
+  }
+});
+
 visionServer.listen(4011, '0.0.0.0', () => {
   console.log('AI Vision mock server running on port 4011');
 });

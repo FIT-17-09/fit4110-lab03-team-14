@@ -1,16 +1,18 @@
 openapi: 3.1.0
 info:
-  title: Smart Campus — AI Vision API
-  version: 0.3.0
-  description: |
-    Contract mock tối thiểu cho consumer-side smoke test trong FIT4110 Lab 03.
-    File này giúp Camera Stream hoặc Core Business gọi thử AI Vision khi service thật chưa hoàn thiện.
+  title: AI Vision Service API (B4)
+  description: API tiếp nhận luồng ảnh từ Camera (B2). Sử dụng kiến trúc Asynchronous (Fire-and-forget), kết quả AI sẽ được phát tán ngầm qua Webhook sang Analytics (B5) và Core Business (B6).
+  version: 2.0.0
+  contact:
+    name: Team 14
 servers:
+  - url: http://localhost:8000
+    description: Local server
   - url: http://localhost:4011
     description: Prism mock server for AI Vision
 tags:
   - name: vision
-    description: Image detection
+    description: Image analysis and detection
   - name: system
     description: Health and runtime information
 security:
@@ -19,13 +21,13 @@ paths:
   /health:
     get:
       tags: [system]
+      summary: Kiểm tra trạng thái service
+      description: Kiểm tra xem service AI Vision có hoạt động bình thường hay không.
       operationId: getVisionHealth
-      summary: Kiểm tra trạng thái AI Vision mock
-      description: Public health check dùng để kiểm tra mock AI Vision đã sẵn sàng.
       security: []
       responses:
         "200":
-          description: Service đang hoạt động
+          description: Service hoạt động bình thường
           content:
             application/json:
               schema:
@@ -35,54 +37,53 @@ paths:
                   value:
                     status: ok
                     service: ai-vision
-                    version: 0.3.0
+                    timestamp: "2026-05-22T09:00:00.000000Z"
 
-  /detect:
+  /api/v1/vision/analyze:
     post:
       tags: [vision]
-      operationId: detectImage
-      summary: Phát hiện đối tượng trong ảnh
-      description: Endpoint mock tối thiểu để consumer kiểm tra luồng Camera/Core gọi AI Vision.
+      summary: Nạp ảnh vào hàng đợi phân tích AI
+      description: Tiếp nhận ảnh từ B2, trả về 202 Accepted ngay lập tức để không làm nghẽn luồng Camera. Quá trình chạy YOLOv8 diễn ra ngầm.
+      operationId: analyzeImage
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DetectionRequest"
+              $ref: "#/components/schemas/AnalyzeRequest"
             examples:
-              valid_url:
+              valid_request:
                 value:
-                  camera_id: CAM01
-                  image_url: https://example.com/frame.jpg
+                  camera_id: "cam-gate-01-entry"
+                  image_url: "https://ultralytics.com/images/bus.jpg"
+                  timestamp: "2026-05-22T10:30:00Z"
+                  correlationId: "corr-unique-string-12345"
       responses:
-        "200":
-          description: Kết quả nhận diện
+        "202":
+          description: Đã tiếp nhận và đưa vào hàng đợi ngầm.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DetectionResponse"
+                $ref: "#/components/schemas/AnalyzeResponse"
               examples:
-                detected:
+                accepted:
                   value:
-                    detection_id: DET001
-                    camera_id: CAM01
-                    label: person
-                    confidence: 0.91
-                    risk_level: medium
+                    status: "received"
+                    message: "Ảnh đã được đưa vào hàng đợi xử lý ngầm."
         "400":
-          description: Request không hợp lệ
+          description: Dữ liệu đầu vào không hợp lệ
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
               examples:
-                invalid_image:
+                bad_request:
                   value:
-                    type: https://smart-campus.local/problems/invalid-image
-                    title: Invalid image
+                    type: https://smart-campus.local/problems/bad-request
+                    title: Bad Request
                     status: 400
-                    detail: image_url or image_base64 is required
-                    instance: /detect
+                    detail: Validation failed for one or more fields.
+                    instance: /api/v1/vision/analyze
         "401":
           description: Thiếu hoặc sai token
           content:
@@ -95,8 +96,22 @@ paths:
                     type: https://smart-campus.local/problems/unauthorized
                     title: Unauthorized
                     status: 401
-                    detail: Missing or invalid bearer token
-                    instance: /detect
+                    detail: Missing or invalid bearer token.
+                    instance: /api/v1/vision/analyze
+        "500":
+          description: Lỗi từ phía server
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+              examples:
+                internal_error:
+                  value:
+                    type: https://smart-campus.local/problems/internal-server-error
+                    title: Internal Server Error
+                    status: 500
+                    detail: An unexpected error occurred while queueing the image.
+                    instance: /api/v1/vision/analyze
 
 components:
   securitySchemes:
@@ -106,60 +121,50 @@ components:
       bearerFormat: JWT
 
   schemas:
-    DetectionRequest:
+    AnalyzeRequest:
       type: object
-      required: [camera_id]
+      required: [camera_id, image_url, timestamp, correlationId]
       properties:
         camera_id:
           type: string
           minLength: 3
-          example: CAM01
+          example: "cam-gate-01-entry"
         image_url:
           type: string
           format: uri
-          example: https://example.com/frame.jpg
-        image_base64:
+          example: "https://ultralytics.com/images/bus.jpg"
+        timestamp:
           type: string
-          description: Chuỗi base64 nếu không dùng image_url
+          format: date-time
+          example: "2026-05-22T10:30:00Z"
+        correlationId:
+          type: string
+          description: Chuỗi truy vết để đồng bộ log xuyên suốt hệ thống microservice.
+          example: "corr-unique-string-12345"
 
-    DetectionResponse:
+    AnalyzeResponse:
       type: object
-      required: [detection_id, label, confidence, risk_level]
-      properties:
-        detection_id:
-          type: string
-          example: DET001
-        camera_id:
-          type: string
-          example: CAM01
-        label:
-          type: string
-          enum: [person, vehicle, unknown]
-          example: person
-        confidence:
-          type: number
-          minimum: 0
-          maximum: 1
-          example: 0.91
-        risk_level:
-          type: string
-          enum: [low, medium, high]
-          example: medium
-
-    HealthResponse:
-      type: object
-      required: [status, service, version]
       properties:
         status:
           type: string
-          enum: [ok]
-          example: ok
+          example: "received"
+        message:
+          type: string
+          example: "Ảnh đã được đưa vào hàng đợi xử lý ngầm."
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "ok"
         service:
           type: string
-          example: ai-vision
-        version:
+          example: "ai-vision"
+        timestamp:
           type: string
-          example: 0.3.0
+          format: date-time
+          example: "2026-05-22T09:00:00.000000Z"
 
     ProblemDetails:
       type: object

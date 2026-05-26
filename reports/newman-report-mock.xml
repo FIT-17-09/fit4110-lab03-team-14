@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="FIT4110 Lab03 - AI Vision Contract Tests" tests="10" time="0.210">
+  <testsuite name="00_Health / GET /health - service is alive" id="54df0f0a-8e98-44f8-ae7c-d50491dbdbd0" timestamp="2026-05-26T11:19:08.098Z" tests="2" failures="0" errors="0" time="0.096">
+    <testcase name="Status code is 200" time="0.096" classname="00HealthGetHealthServiceIsAlive"/>
+    <testcase name="Response has service status" time="0.096" classname="00HealthGetHealthServiceIsAlive"/>
+  </testsuite>
+  <testsuite name="01_Functional / POST /api/v1/vision/analyze - happy path accepts analysis request" id="ac68e785-cd25-4297-9f0c-a6f3aec1774b" timestamp="2026-05-26T11:19:08.098Z" tests="2" failures="0" errors="0" time="0.038">
+    <testcase name="Status code is 202" time="0.038" classname="01FunctionalPostApiV1VisionAnalyzeHappyPathAcceptsAnalysisRequest"/>
+    <testcase name="Response acknowledges the request" time="0.038" classname="01FunctionalPostApiV1VisionAnalyzeHappyPathAcceptsAnalysisRequest"/>
+  </testsuite>
+  <testsuite name="02_Auth / POST /api/v1/vision/analyze - missing token is rejected on real service" id="9a1e53aa-406d-4e24-bef0-3c33865f8973" timestamp="2026-05-26T11:19:08.098Z" tests="1" failures="0" errors="0" time="0.014">
+    <testcase name="Skipped on mock: Prism does not enforce real auth middleware" time="0.014" classname="02AuthPostApiV1VisionAnalyzeMissingTokenIsRejectedOnRealService"/>
+  </testsuite>
+  <testsuite name="02_Auth / POST /api/v1/vision/analyze - invalid token is rejected on real service" id="2da44e1f-edfc-44ec-8c35-b372003da6a8" timestamp="2026-05-26T11:19:08.098Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="Skipped on mock: Prism does not validate signature" time="0.006" classname="02AuthPostApiV1VisionAnalyzeInvalidTokenIsRejectedOnRealService"/>
+  </testsuite>
+  <testsuite name="03_Negative / POST /api/v1/vision/analyze - missing camera_id returns validation error" id="55d95fea-4d88-4ce8-8f42-fcacc6f10cd1" timestamp="2026-05-26T11:19:08.098Z" tests="2" failures="0" errors="0" time="0.013">
+    <testcase name="Status code is 400" time="0.013" classname="03NegativePostApiV1VisionAnalyzeMissingCameraIdReturnsValidationError"/>
+    <testcase name="Error response follows ProblemDetails shape" time="0.013" classname="03NegativePostApiV1VisionAnalyzeMissingCameraIdReturnsValidationError"/>
+  </testsuite>
+  <testsuite name="03_Negative / POST /api/v1/vision/analyze - wrong format image_url returns validation error" id="f23d954c-2140-41f2-bad6-13ec61028819" timestamp="2026-05-26T11:19:08.098Z" tests="2" failures="0" errors="0" time="0.005">
+    <testcase name="Status code is 400" time="0.005" classname="03NegativePostApiV1VisionAnalyzeWrongFormatImageUrlReturnsValidationError"/>
+    <testcase name="Error response has detail" time="0.005" classname="03NegativePostApiV1VisionAnalyzeWrongFormatImageUrlReturnsValidationError"/>
+  </testsuite>
+  <testsuite name="04_Boundary_Reliability / POST /api/v1/vision/analyze - boundary camera_id length 3 is accepted" id="c229aac8-f6a4-4959-ba77-f372e685a6b6" timestamp="2026-05-26T11:19:08.098Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="Boundary camera_id length 3 returns success" time="0.007" classname="04BoundaryReliabilityPostApiV1VisionAnalyzeBoundaryCameraIdLength3IsAccepted"/>
+  </testsuite>
+  <testsuite name="04_Boundary_Reliability / POST /api/v1/vision/analyze - boundary camera_id length 2 is rejected" id="76166189-e2f4-42c5-898f-0e2656c55186" timestamp="2026-05-26T11:19:08.098Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="Boundary camera_id length 2 returns 400 error" time="0.011" classname="04BoundaryReliabilityPostApiV1VisionAnalyzeBoundaryCameraIdLength2IsRejected"/>
+  </testsuite>
+  <testsuite name="05_Consumer_side_Smoke / Consumer smoke - AI Vision calls IoT Ingestion mock to post a reading" id="81959fd4-0d81-436a-a670-5fbcc850651f" timestamp="2026-05-26T11:19:08.098Z" tests="2" failures="0" errors="0" time="0.013">
+    <testcase name="Consumer receives success from provider mock" time="0.013" classname="05ConsumerSideSmokeConsumerSmokeAiVisionCallsIoTIngestionMockToPostAReading"/>
+    <testcase name="Consumer can read reading fields" time="0.013" classname="05ConsumerSideSmokeConsumerSmokeAiVisionCallsIoTIngestionMockToPostAReading"/>
+  </testsuite>
+  <testsuite name="06_Local_only_NonFunctional / POST /api/v1/vision/analyze - local response time SLA" id="4d612f3a-4e55-43cb-a69f-da54d9c64ebf" timestamp="2026-05-26T11:19:08.098Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="Skipped on mock: mock latency is not evidence of real service reliability" time="0.007" classname="06LocalOnlyNonFunctionalPostApiV1VisionAnalyzeLocalResponseTimeSla"/>
+  </testsuite>
+</testsuites>
