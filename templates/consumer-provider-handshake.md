@@ -4,25 +4,26 @@
 
 - Lab: FIT4110 Lab 03
 - Ngày: 2026-05-26
-- Provider team: AI Vision team (Team 14)
-- Consumer team: Camera / Core Business / Analytics
+- Provider team: AI Vision team (Team 14 — B4)
+- Consumer team: Camera Stream (B2) — nhóm gửi ảnh vào B4
 - Provider service: ai-vision
-- Consumer service: camera / core-business / iot-ingestion (mock dependency)
+- Consumer service: camera-stream (B2)
 
 ## Contract
 
 - Contract file: contracts/ai-vision.openapi.yaml
 - Mock base URL: http://localhost:4011
-- Auth method: Bearer token header `Authorization: Bearer {{authToken}}`
-- Endpoint được test: GET /health, POST /api/v1/vision/analyze, POST /readings (Consumer smoke to IoT Ingestion mock)
+- Auth method: Không bắt buộc ở mock; service thực gắn Bearer token khi gọi ra ngoài (B5, B6)
+- Endpoint được test: `GET /health`, `POST /api/v1/vision/analyze`
+
+> **Ghi chú kiến trúc**: B4 sử dụng kiến trúc **Asynchronous Fire-and-Forget**. Sau khi nhận ảnh từ B2 (Camera Stream), service trả về `202 Accepted` ngay lập tức rồi chạy YOLOv8 ngầm, sau đó tự động bắn Webhook sang B5 (Analytics) và B6 (Core Business) khi có kết quả. Response `202` **không** chứa kết quả AI — đây là thay đổi có chủ đích so với mô tả gốc 6.4.4 của đề tài.
 
 ## Smoke test
 
-### Request
+### Request (B2 → B4)
 
 ```http
 POST /api/v1/vision/analyze
-Authorization: Bearer {{authToken}}
 Content-Type: application/json
 ```
 
@@ -35,7 +36,7 @@ Content-Type: application/json
 }
 ```
 
-### Expected response
+### Expected response (B4 → B2)
 
 ```json
 {
@@ -44,21 +45,28 @@ Content-Type: application/json
 }
 ```
 
+> Kết quả AI thực sự (`detected`, `object`, `confidence`, `risk_level`) được B4 gửi qua Webhook sang B5 và B6 sau khi xử lý ngầm xong.
+
+## Consumer-side smoke test (trong bộ test Newman)
+
+Bộ test `05_Consumer_side_Smoke` trong Postman Collection mô phỏng vai trò **B4 là consumer** gọi vào mock IoT Ingestion (B3) để kiểm tra B4 có thể parse response của provider khác. Đây là bài tập consumer-side testing theo yêu cầu Lab 03, **không phải luồng nghiệp vụ thực**.
+
 ## Kết quả
 
 - [x] Consumer gọi mock thành công.
 - [x] Consumer parse được field cần dùng.
 - [x] Consumer hiểu lỗi 4xx/5xx provider trả về.
-- [x] Có Newman report hoặc screenshot.
+- [x] Có Newman report (reports/newman-report.html và reports/newman-report-mock.xml).
 
 ## Ghi chú thay đổi hợp đồng
 
-| Nội dung | Trước | Sau | Người đồng ý |
+| Nội dung | Trước (đề tài gốc) | Sau (triển khai thực tế) | Người đồng ý |
 |---|---|---|---|
-| Cấu trúc Error | Inline JSON error schemas | Chuẩn hóa schema `ProblemDetails` | Team 14 |
-| Auth | Bổ sung Security Scheme JWT | Bổ sung BearerAuth header bắt buộc | Team 14 |
+| Kiến trúc response | Synchronous: trả `detected`, `confidence`, `risk_level` trực tiếp | Async Fire-and-Forget: trả `202 status=received`, kết quả AI gửi qua Webhook | Team 14 |
+| Cấu trúc Error | Inline JSON error schemas | Chuẩn hóa schema ProblemDetails (RFC 9457) | Team 14 |
+| Field bổ sung | `camera_id`, `image_url`, `timestamp` | Thêm `correlationId` để truy vết log xuyên suốt hệ thống | Team 14 + đàm phán với B2 |
 
 ## Xác nhận
 
-- Provider representative: AI Vision (Team 14)
-- Consumer representative: Camera / IoT Ingestion (Team 14)
+- Provider representative: AI Vision (Team 14 — B4)
+- Consumer representative: Camera Stream (B2)
