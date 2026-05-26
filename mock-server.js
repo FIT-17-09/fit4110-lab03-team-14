@@ -131,27 +131,44 @@ const visionServer = http.createServer(async (request, response) => {
     });
   }
 
-  if (request.method === 'POST' && pathname === '/detect') {
+  if (request.method === 'POST' && pathname === '/api/v1/vision/analyze') {
     try {
       const body = await parseBody(request);
-      const { camera_id, image_url, image_base64 } = body;
+      const { camera_id, image_url } = body;
 
-      if (!camera_id || (!image_url && !image_base64)) {
+      if (!camera_id) {
         return sendJson(response, 400, {
-          type: 'https://smart-campus.local/problems/invalid-image',
-          title: 'Invalid image',
+          type: 'https://smart-campus.local/problems/validation-error',
+          title: 'Validation error',
           status: 400,
-          detail: 'image_url or image_base64 is required',
-          instance: '/detect'
+          detail: 'camera_id is required',
+          instance: '/api/v1/vision/analyze'
         });
       }
 
-      return sendJson(response, 200, {
-        detection_id: 'DET-' + Date.now(),
-        camera_id: camera_id,
-        label: 'person',
-        confidence: 0.91,
-        risk_level: 'medium'
+      if (camera_id.length < 3) {
+        return sendJson(response, 400, {
+          type: 'https://smart-campus.local/problems/validation-error',
+          title: 'Validation error',
+          status: 400,
+          detail: 'camera_id must be at least 3 characters',
+          instance: '/api/v1/vision/analyze'
+        });
+      }
+
+      if (image_url && !image_url.startsWith('http')) {
+        return sendJson(response, 400, {
+          type: 'https://smart-campus.local/problems/validation-error',
+          title: 'Validation error',
+          status: 400,
+          detail: 'image_url must be a valid URI',
+          instance: '/api/v1/vision/analyze'
+        });
+      }
+
+      return sendJson(response, 202, {
+        status: 'received',
+        message: 'Ảnh đã được đưa vào hàng đợi xử lý ngầm.'
       });
     } catch (e) {
       return sendJson(response, 400, { error: e.message });
