@@ -4,3 +4,6 @@ node_modules/
 reports/*.xml
 reports/*.html
 prism.log
+.venv/
+__pycache__/
+*.pyc
